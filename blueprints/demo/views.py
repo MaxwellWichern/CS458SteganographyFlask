@@ -1,5 +1,5 @@
 from main import app
-from flask import request
+from flask import request, Response
 import functions as fun
 
 @app.route('/')
@@ -16,10 +16,9 @@ def user(name):
 
 @app.route('/post', methods=['POST'])
 def testPost():
-    data = request.get_data()
+    print('here')
+    data = request.get_json()
     print(data)
-    # data = request.get_json()
-    # print(data)
     return data
 
 @app.route('/<num1>/<num2>')

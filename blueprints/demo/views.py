@@ -17,7 +17,7 @@ def user(name):
 @app.route('/post', methods=['POST'])
 def testPost():
     print('here')
-    data = request.get_json()
+    data = request.get_data()
     print(data)
     return data
 

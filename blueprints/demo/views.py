@@ -1,6 +1,10 @@
 from main import app
-from flask import request, Response
+from flask import request, jsonify
+import numpy as np
 import functions as fun
+import requests
+import json
+import cv2
 
 @app.route('/')
 def home():
@@ -16,10 +20,11 @@ def user(name):
 
 @app.route('/post', methods=['POST'])
 def testPost():
-    print('here')
-    data = request.get_data()
-    print(data)
-    return data
+    data = request.form
+    file = request.files['file']
+    print(data['Hidden'])
+    file.save('test.jpg')
+    return 'Done', 204
 
 @app.route('/<num1>/<num2>')
 def process(num1, num2):

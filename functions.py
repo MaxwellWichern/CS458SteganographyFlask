@@ -45,11 +45,9 @@ def s3Upload(bucket, path, key):
         print(f"Error uploading {path} to S3: {e}")
 
 def s3Delete(bucket, key):
-    s3 = boto3.client('s3')
-
+    s3 = s3Connection()
     try:
         s3.delete_object(Bucket=bucket, Key=key)
         print(f"Removed s3://{bucket}/{key}")
     except Exception as e:
         print(f"Error removing s3://{bucket}/{key}: {e}")
-

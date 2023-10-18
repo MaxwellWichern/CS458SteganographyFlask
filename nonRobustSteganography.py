@@ -63,13 +63,15 @@ def encrypt(input_img, message_to_encrypt):
 
 def decrypt(hidden_image):
 
-    # Taking the image we are passed and reassigning it
+    # Taking the image we are passed and reassigning it to a name I like better
+    # Don't ask me why I only did this for this function
     image = hidden_image
 
     # Getting the dimensions of the image
     height, width, _ = image.shape
 
-    # Initializing an empty binary array using numpy
+    # Initializing an empty numpy array
+    # We also shape the array to be an array of matrices
     extracted_data = np.zeros((height, width, 3), int)
 
     # Pulling the binary data from the LSB of the image
@@ -88,13 +90,13 @@ def decrypt(hidden_image):
     # Reshaping the data we pulled from an array of 3x3 matrices into a 1D array
     extracted_data = extracted_data.flatten()
 
-    # Convert the extracted binary data into one long string
+    # Convert the extracted binary data array into one long string
     extracted_data = "".join([str(bit) for bit in extracted_data])
 
     # Splitting it up into chunks of 8 characters to an entry
     chunks = [extracted_data[i:i+8] for i in range(0, len(extracted_data), 8)]
 
-    # Converting the chunks of 8 characters into a numpy array so that we can use numpy function on the data
+    # Converting the chunks of 8 characters into a numpy array so that we can use numpy functions on the data
     array_entry = np.array(chunks)
 
     # We will use this next to search for empty entries and remove them
@@ -108,7 +110,7 @@ def decrypt(hidden_image):
         # Delete the element at the found index
         my_array = np.delete(array_entry, index_to_delete)
 
-    # Now that we have removed all of the empty entries everything remaining will be translated back to words
+    # Now that we have removed all the empty entries everything remaining will be translated back to words
 
     # Taking the numpy array of chunks and then returning them to one long string
     binary_string = ''.join(my_array)
@@ -119,24 +121,24 @@ def decrypt(hidden_image):
     # Convert each 8-bit binary chunk to its decimal representation and then to a character
     text = ''.join([chr(int(chunk, 2)) for chunk in binary_chunks])
 
-    #returning the message back to the main
+    # Returning the message back to the main
     return {"message": text}
 
 
 # Load the initial image
 image = cv2.imread("rose.png")
 
-#change the string in here to change what we are hiding in the image
-#encrypt(image, "AHHHHH ;-; HHHHHA")
-encrypt(image, "80085")
+# Change the string in here to change what we are hiding in the image
+encrypt(image, "AHHHHH ;-; HHHHHA")
+#encrypt(image, "80085")
 
-# this is loading the image after it's encrypted
+# This is loading the image after it's encrypted
 image2 = cv2.imread("nonRobustImage.png")
 
-#sending the streganographied image to get decoded
+# Sending the streganographied? image to get decoded
 hidden_message = decrypt(image2)
 
-#printing out the message that was hidden
+# Printing out the message that was hidden
 print(hidden_message["message"])
 
 

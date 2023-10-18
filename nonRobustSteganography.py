@@ -1,7 +1,7 @@
 import numpy as np
 import cv2
-from scipy.fft import dctn, idctn
-import array as arr
+#from scipy.fft import dctn, idctn
+#import array as arr
 
 #NOT CURRENTLY USING THIS FUNCTION AT ALL BUT PLEASE DON'T DELETE IT
 def string_to_binary_array(input_string):
@@ -32,13 +32,17 @@ def encrypt(input_img, message_to_encrypt):
     # Once the character is in binary format we add it onto the binary_data string
     binary_data = "".join(format(ord(char), '08b') for char in message_to_encrypt)
 
-    #double checking to see if i need to pad the data
-    binary_data = binary_data.ljust(height * width * 3, '0')  # Pad data if needed
+    # Shaping our data into the length and width of the image that we will hide it in
+    # This turns our data into a fake copy of the image with our data in the pixel matrix slots were we will hide them
+    # We start our data string in the top left of the fake image and then work left to right top to bottom
+    # Then we will fill the rest of the fake image with zeros
+    binary_data = binary_data.ljust(height * width * 3, '0')
 
-    #converting
-    binary_data = np.array(list(binary_data)).astype(int)  # Convert to NumPy array
+    # Converting our fake image string into a numpy array
+    # Each char in the fake image string is its own element in the array
+    binary_data = np.array(list(binary_data)).astype(int)
 
-    #shaping
+    # Here we reshape our fake image array into an array of matrices
     binary_data = binary_data.reshape((height, width, 3))
 
     # Modify the least significant bit of each channel in the image
@@ -123,7 +127,8 @@ def decrypt(hidden_image):
 image = cv2.imread("rose.png")
 
 #change the string in here to change what we are hiding in the image
-encrypt(image, "this is the hidden message")
+#encrypt(image, "AHHHHH ;-; HHHHHA")
+encrypt(image, "80085")
 
 # this is loading the image after it's encrypted
 image2 = cv2.imread("nonRobustImage.png")
@@ -133,3 +138,5 @@ hidden_message = decrypt(image2)
 
 #printing out the message that was hidden
 print(hidden_message["message"])
+
+

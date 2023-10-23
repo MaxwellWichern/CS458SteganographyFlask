@@ -1,25 +1,6 @@
 import numpy as np
 import cv2
 
-#NOT CURRENTLY USING THIS FUNCTION AT ALL BUT PLEASE DON'T DELETE IT
-def string_to_binary_array(input_string):
-    #initializing an empty numpy array
-    binary_array = np.zeros((0))
-
-    for char in input_string:
-        # Get the ASCII code for the character and convert it to binary
-        # We use the [2:] part to get rid of the 0b prefix of the ASCII
-        binary_representation = bin(ord(char))[2:]
-
-        # Here we make sure that each binary entry is 8 characters long
-        # We add leading zeros with the zfill if it is not the correct length
-        binary_representation = binary_representation.zfill(8)
-
-        # Add the binary entry to the array
-        binary_array = np.append(binary_array, binary_representation)
-
-    return binary_array
-
 def encrypt(input_image, message_to_encrypt):
     # Getting the dimensions of the image
     height, width, depth = input_image.shape

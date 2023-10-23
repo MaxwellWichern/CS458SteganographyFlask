@@ -1,17 +1,11 @@
 from main import app
-from flask import request, jsonify
+from flask import request
 import numpy as np
 import functions as fun
-import requests
-import json
-import cv2
+
 
 @app.route('/')
 def home():
-    # mess = fun.s3Upload('requirements.txt', 'big.txt')
-    # print(mess)
-    # mess = fun.s3Delete('stegosaurus', 'big.txt')
-    # print(mess)
     return "Hello world!"
 
 @app.route('/hello/<name>', methods=['GET'])

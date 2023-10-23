@@ -7,7 +7,8 @@ def addNums(numOne, numTwo):
 def s3Connection():
     s3 = boto3.resource('s3',
                         aws_access_key_id = 'AKIASUMLVXC3TBX75UN7',
-                        aws_secret_access_key = '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'
+                        aws_secret_access_key = 'FBbWD84mKBPNyoLFDbZ7D8EYub4KyCwESqOk0jnP',
+                        region_name='us-east-2'
                         )
     return s3
 
@@ -21,7 +22,7 @@ def s3Connection():
 #   response = s3.meta.client.delete_object(Bucket = bucket, Key = key)
 #   return response
 
-def s3URL(bucket, key):
+def s3URL(bucket, key, region_name='us-east-2'):
     # Initialize the S3 client
     s3 = s3Connection()
     # Generate a pre-signed URL for the S3 object

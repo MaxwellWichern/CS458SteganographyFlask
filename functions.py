@@ -28,7 +28,15 @@ def s3URL(s3, bucket, key):
     
 def s3Upload(s3, bucket, path, key):
 
-    s3.meta.client.upload_file(path, bucket, key)
+    fileType = path.split('.')
+    if fileType[-1] == 'jpg':
+        fileType[-1] = 'jpeg'
+    print(fileType)
+
+    with open(path, 'rb') as file:
+        image_data = file.read()
+
+    s3.meta.client.put_object(Bucket = bucket, Key = key, Body = image_data, ContentType=f'image/{fileType[-1]}')
     return (f"Uploaded {path} to s3://{bucket}/{key}")
 
 def s3Delete(s3, bucket, key):

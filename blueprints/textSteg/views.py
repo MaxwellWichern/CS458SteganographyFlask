@@ -25,8 +25,8 @@ def uploadImage():
     data = json.loads(data.decode())
 
     s3 = fun.s3Connection()
-    key = data['User'] + '/' + data['imType'] + '/test.png'
-    response = fun.s3Upload(s3, data['Bucket'], 'massive.png', key)
+    key = data['User'] + '/' + data['imType'] + '/red.png'
+    response = fun.s3Upload(s3, data['Bucket'], 'red.png', key)
 
     return jsonify(response)
 

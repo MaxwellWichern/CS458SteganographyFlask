@@ -1,5 +1,5 @@
 from main import app
-from flask import request
+from flask import request, jsonify
 
 
 @app.route('/')
@@ -16,4 +16,4 @@ def testPost():
     file = request.files['file']
     print(data['Hidden'])
     file.save('test.jpg')
-    return 'Done', 204
+    return jsonify({"message": "test"}), 204

@@ -16,9 +16,7 @@ def s3Connection():
                         )
     return s3
 
-def s3URL(bucket, key, region_name='us-east-2'):
-    # Initialize the S3 client
-    s3 = s3Connection()
+def s3URL(s3, bucket, key):
     # Generate a pre-signed URL for the S3 object
 
     url = s3.meta.client.generate_presigned_url(

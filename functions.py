@@ -16,19 +16,7 @@ def s3Connection():
                         )
     return s3
 
-# def s3Upload(file, location):
-#    s3 = s3Connection()
-#   response = s3.meta.client.upload_file(file, 'stegosaurus', location)
-#   return response
-
-# def s3Delete(bucket, key):
-#   s3 = s3Connection()
-#   response = s3.meta.client.delete_object(Bucket = bucket, Key = key)
-#   return response
-
-def s3URL(bucket, key, region_name='us-east-2'):
-    # Initialize the S3 client
-    s3 = s3Connection()
+def s3URL(s3, bucket, key):
     # Generate a pre-signed URL for the S3 object
 
     url = s3.meta.client.generate_presigned_url(

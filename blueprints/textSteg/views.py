@@ -1,10 +1,7 @@
 from main import app
 from flask import request, jsonify
-import numpy as np
 import functions as fun
-import requests
 import json
-import cv2
 
 @app.route('/user/all/images/', methods=['POST'])
 def getImages():
@@ -32,3 +29,29 @@ def uploadImage():
     response = fun.s3Upload(s3, data['Bucket'], 'red.png', key)
 
     return jsonify(response)
+
+@app.route('/user/delete/image/', methods=['POST'])
+def deleteImage():
+    data = request.get_data()
+    data = json.loads(data.decode())
+
+    s3 = fun.s3Connection()
+    response = fun.s3Delete(s3, data['Bucket'], data['Key'])
+
+    return jsonify(response)
+
+@app.route('/user/encode/image/', methods=['POST'])
+def encodeImage():
+    data = request.get_data()
+    data = json.loads(data.decode())
+
+    test = fun.encrypt(data['image'], data['message'])
+    return(test)
+
+@app.route('/user/decode/image/', methods=['POST'])
+def decodeImage():
+    data = request.get_data()
+    data = json.loads(data.decode())
+
+    test = fun.decrypt(data['image'])
+    return(test)

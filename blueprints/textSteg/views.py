@@ -42,11 +42,23 @@ def deleteImage():
 
 @app.route('/user/encode/image/', methods=['POST'])
 def encodeImage():
-    data = request.get_data()
-    data = json.loads(data.decode())
 
-    test = fun.encrypt(data['image'], data['message'])
-    return(test)
+    data = request.form
+    file = request.files['file']
+    print(data['User'])
+    file.save('test.png')
+
+    s3 = fun.s3Connection()
+    key = data['User'] + '/OrigImg/test.png'
+    uploadOrg = fun.s3Upload(s3, 'stegosaurus', 'test.png', key)
+
+    encodeResponse = fun.encrypt('test.png', data['Hidden'])
+
+    key = data['User'] + '/EncryptedImg/test.png'
+    uploadEnc = fun.s3Upload(s3, 'stegosaurus', 'RobustImage.png', key)
+    imgLink = fun.s3URL(s3, 'stegosaurus', key)
+
+    return jsonify({'imgLink': imgLink})
 
 @app.route('/user/decode/image/', methods=['POST'])
 def decodeImage():

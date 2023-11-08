@@ -2,6 +2,7 @@ from main import app
 from flask import request, jsonify
 import functions as fun
 import json
+import tempfile
 
 @app.route('/user/all/images/', methods=['POST'])
 def getImages():
@@ -45,25 +46,34 @@ def encodeImage():
 
     data = request.form
     file = request.files['file']
-    print(data['User'])
-    file.save('test.png')
 
-    s3 = fun.s3Connection()
-    key = data['User'] + '/OrigImg/test.png'
-    uploadOrg = fun.s3Upload(s3, 'stegosaurus', 'test.png', key)
+    with tempfile.TemporaryDirectory() as tmpDir:
+        fileName = fun.timeStamp() + '.png'
+        filePath = tmpDir + '/' + fileName
+        file.save(filePath)
 
-    encodeResponse = fun.encrypt('test.png', data['Hidden'])
+        s3 = fun.s3Connection()
+        key = data['User'] + '/OrigImg/' + fileName
+        uploadOrg = fun.s3Upload(s3, 'stegosaurus', filePath, key)
 
-    key = data['User'] + '/EncryptedImg/test.png'
-    uploadEnc = fun.s3Upload(s3, 'stegosaurus', 'RobustImage.png', key)
-    imgLink = fun.s3URL(s3, 'stegosaurus', key)
+        encodeResponse = fun.encrypt(filePath, data['Hidden'], tmpDir)
+
+        key = data['User'] + '/EncryptedImg/' + encodeResponse['fileName']
+        uploadEnc = fun.s3Upload(s3, 'stegosaurus', tmpDir + '/' + encodeResponse['fileName'], key)
+        imgLink = fun.s3URL(s3, 'stegosaurus', key)
 
     return jsonify({'imgLink': imgLink})
 
 @app.route('/user/decode/image/', methods=['POST'])
 def decodeImage():
-    data = request.get_data()
-    data = json.loads(data.decode())
+    data = request.form
+    file = request.files['file']
 
-    test = fun.decrypt(data['image'])
-    return(test)
+    with tempfile.TemporaryDirectory() as tmpDir:
+        filePath = tmpDir + '/' + fun.timeStamp() + '.png'
+        file.save(filePath)
+
+        decodeResponse = fun.decrypt(filePath)
+        print(decodeResponse)
+
+    return(decodeResponse)

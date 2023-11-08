@@ -2,9 +2,11 @@ import numpy as np
 import boto3
 from botocore.client import Config
 import cv2
+import datetime
 
-def addNums(numOne, numTwo):
-    return numOne + numTwo
+def timeStamp():
+    stamp = datetime.datetime.now()
+    return (stamp.strftime("%Y%m%d%H%M%S%f"))
 
 def s3Connection():
     
@@ -31,7 +33,6 @@ def s3Upload(s3, bucket, path, key):
     fileType = path.split('.')
     if fileType[-1] == 'jpg':
         fileType[-1] = 'jpeg'
-    print(fileType)
 
     with open(path, 'rb') as file:
         image_data = file.read()
@@ -53,7 +54,7 @@ def genUsersLinks(s3, bucket, user, imType):
 # Steganography Functions Below
 
 
-def encrypt(image_path, message_to_encrypt):
+def encrypt(image_path, message_to_encrypt, tmpDir):
 
     input_image = cv2.imread(image_path)
 
@@ -88,14 +89,15 @@ def encrypt(image_path, message_to_encrypt):
             for r in range(3):
                 input_image[b, g, r] = (input_image[b, g, r] & 0xFE) | binary_data[b, g, r]
 
-    # Save the modified image
-    cv2.imwrite("RobustImage.png", input_image)
+    # Save the modified imagev
+    fileName = timeStamp() + ".png"
+    cv2.imwrite(tmpDir + '/' + fileName, input_image)
 
     # cv2.imshow("temp", (input_image%2)*255) # DELETE LATER
     # cv2.waitKey(0)                          # DELETE LATER
 
     # Printing to show that we have finished encoding
-    return({'message': 'encoded'})
+    return({'fileName': fileName})
 
 def decrypt(image_path):
 

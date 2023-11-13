@@ -3,18 +3,18 @@ from flask import request, jsonify
 import functions as fun
 import json
 import tempfile
+import requests
 
 @app.route('/user/all/images/', methods=['POST'])
 def getImages():
-    data = request.get_data()
-    data = json.loads(data.decode())
+    data = request.form
 
     s3 = fun.s3Connection()
-    userImages = fun.genUsersLinks(s3, data['Bucket'], data['User'], data['imType'])['Contents']
+    userImages = fun.genUsersLinks(s3, 'stegosaurus', data['User'], data['imType'])['Contents']
     urls = []
     for item in userImages:
         print(item['Key'])
-        URL = fun.s3URL(s3, data['Bucket'], item['Key'])
+        URL = fun.s3URL(s3, 'stegosaurus', item['Key'])
         urls.append(URL)
 
     print(urls)
@@ -44,13 +44,24 @@ def deleteImage():
 @app.route('/user/encode/image/', methods=['POST'])
 def encodeImage():
 
+    switch = False
     data = request.form
-    file = request.files['file']
+    if data['file'] != 'null':
+        file = request.files['file']
+    else:
+        file = data['preview']
+        switch = True
 
     with tempfile.TemporaryDirectory() as tmpDir:
         fileName = fun.timeStamp() + '.png'
         filePath = tmpDir + '/' + fileName
-        file.save(filePath)
+        if not switch:
+            file.save(filePath)
+        else:
+            response = requests.get(file)
+            with open(filePath, 'wb') as f:
+                f.write(response.content)
+            del response
 
         s3 = fun.s3Connection()
         key = data['User'] + '/OrigImg/' + fileName

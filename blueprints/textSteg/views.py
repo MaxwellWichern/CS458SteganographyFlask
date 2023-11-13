@@ -14,7 +14,7 @@ def getImages():
     urls = []
     for item in userImages:
         print(item['Key'])
-        URL = fun.s3URL(s3, data['Bucket'], item['Key'])
+        URL = fun.s3URL(s3, 'stegosaurus', item['Key'])
         urls.append(URL)
 
     print(urls)

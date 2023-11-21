@@ -77,12 +77,25 @@ def encodeImage():
 
 @app.route('/user/decode/image/', methods=['POST'])
 def decodeImage():
+    
+    switch = False
     data = request.form
-    file = request.files['file']
+    print(data)
+    if data['file'] != 'null':
+        file = request.files['file']
+    else:
+        file = data['preview']
+        switch = True
 
     with tempfile.TemporaryDirectory() as tmpDir:
         filePath = tmpDir + '/' + fun.timeStamp() + '.png'
-        file.save(filePath)
+        if not switch:
+            file.save(filePath)
+        else:
+            response = requests.get(file)
+            with open(filePath, 'wb') as f:
+                f.write(response.content)
+            del response
 
         decodeResponse = fun.decrypt(filePath)
         print(decodeResponse)

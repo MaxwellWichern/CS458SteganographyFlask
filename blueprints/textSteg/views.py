@@ -46,7 +46,7 @@ def encodeImage():
 
     switch = False
     data = request.form
-    if data['file'] != 'null':
+    if request.files['file'] != 'null':
         file = request.files['file']
     else:
         file = data['preview']
@@ -81,23 +81,24 @@ def decodeImage():
     switch = False
     data = request.form
     print(data)
-    if data['file'] != 'null':
+    try:
         file = request.files['file']
-    else:
+    except:
         file = data['preview']
         switch = True
 
-    with tempfile.TemporaryDirectory() as tmpDir:
-        filePath = tmpDir + '/' + fun.timeStamp() + '.png'
-        if not switch:
-            file.save(filePath)
-        else:
-            response = requests.get(file)
-            with open(filePath, 'wb') as f:
-                f.write(response.content)
-            del response
+    finally:
+        with tempfile.TemporaryDirectory() as tmpDir:
+            filePath = tmpDir + '/' + fun.timeStamp() + '.png'
+            if not switch:
+                file.save(filePath)
+            else:
+                response = requests.get(file)
+                with open(filePath, 'wb') as f:
+                    f.write(response.content)
+                del response
 
-        decodeResponse = fun.decrypt(filePath)
-        print(decodeResponse)
+            decodeResponse = fun.decrypt(filePath)
+            print(decodeResponse)
 
     return(decodeResponse)

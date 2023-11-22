@@ -17,7 +17,8 @@ def getImages():
         URL = fun.s3URL(s3, 'stegosaurus', item['Key'])
         urls.append(URL)
 
-    print(urls)
+    # print(len(urls))
+    # print(urls)
     return jsonify({'Links': urls})
 
 @app.route('/user/upload/image/', methods=['POST'])
@@ -46,32 +47,33 @@ def encodeImage():
 
     switch = False
     data = request.form
-    if request.files['file'] != 'null':
+    try:
         file = request.files['file']
-    else:
+    except:
         file = data['preview']
         switch = True
 
-    with tempfile.TemporaryDirectory() as tmpDir:
-        fileName = fun.timeStamp() + '.png'
-        filePath = tmpDir + '/' + fileName
-        if not switch:
-            file.save(filePath)
-        else:
-            response = requests.get(file)
-            with open(filePath, 'wb') as f:
-                f.write(response.content)
-            del response
+    finally:
+        with tempfile.TemporaryDirectory() as tmpDir:
+            fileName = fun.timeStamp() + '.png'
+            filePath = tmpDir + '/' + fileName
+            if not switch:
+                file.save(filePath)
+            else:
+                response = requests.get(file)
+                with open(filePath, 'wb') as f:
+                    f.write(response.content)
+                del response
 
-        s3 = fun.s3Connection()
-        key = data['User'] + '/OrigImg/' + fileName
-        uploadOrg = fun.s3Upload(s3, 'stegosaurus', filePath, key)
+            s3 = fun.s3Connection()
+            key = data['User'] + '/OrigImg/' + fileName
+            uploadOrg = fun.s3Upload(s3, 'stegosaurus', filePath, key)
 
-        encodeResponse = fun.encrypt(filePath, data['Hidden'], tmpDir)
+            encodeResponse = fun.encrypt(filePath, data['Hidden'], tmpDir)
 
-        key = data['User'] + '/EncryptedImg/' + encodeResponse['fileName']
-        uploadEnc = fun.s3Upload(s3, 'stegosaurus', tmpDir + '/' + encodeResponse['fileName'], key)
-        imgLink = fun.s3URL(s3, 'stegosaurus', key)
+            key = data['User'] + '/EncryptedImg/' + encodeResponse['fileName']
+            uploadEnc = fun.s3Upload(s3, 'stegosaurus', tmpDir + '/' + encodeResponse['fileName'], key)
+            imgLink = fun.s3URL(s3, 'stegosaurus', key)
 
     return jsonify({'imgLink': imgLink})
 
@@ -99,6 +101,6 @@ def decodeImage():
                 del response
 
             decodeResponse = fun.decrypt(filePath)
-            print(decodeResponse)
+            # print(decodeResponse)
 
     return(decodeResponse)

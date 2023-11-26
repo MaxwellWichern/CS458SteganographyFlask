@@ -23,8 +23,7 @@ def getImages():
 
 @app.route('/user/upload/image/', methods=['POST'])
 def uploadImage():
-    data = request.get_data()
-    data = json.loads(data.decode())
+    data = request.form
 
     s3 = fun.s3Connection()
     key = data['User'] + '/' + data['imType'] + '/red.png'
@@ -34,8 +33,7 @@ def uploadImage():
 
 @app.route('/user/delete/image/', methods=['POST'])
 def deleteImage():
-    data = request.get_data()
-    data = json.loads(data.decode())
+    data = request.form
 
     s3 = fun.s3Connection()
     response = fun.s3Delete(s3, data['Bucket'], data['Key'])

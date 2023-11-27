@@ -27,14 +27,10 @@ def encrypt(original_image, image_to_encrypt):
                 if(x == height2 - 1):
                     original_image[x + 1][y][z] = int('11110000', 2)
                     #original_image[x + 1][y][z] = int(v1[:5] + '0000', 2)
-                    #print(original_image[x + 1][y][z])
-                    #print("here")
 
                 if(y == width2 - 1):
                     original_image[x][y + 1][z] = int('11110000', 2)
                     #original_image[x][y + 1][z] = int(v1[:5] + '0000', 2)
-                    #print("here")
-
 
                 # Taking 5 MSBs from the first image and 3 MSBs from the second image
 
@@ -42,9 +38,6 @@ def encrypt(original_image, image_to_encrypt):
                 v3 = v1[:5] + v2[:3]
 
                 #original_image[x + 1][y + 1][z] = int('11110000', 2)
-                #print("hide here")
-                #print(x, y, z)
-                #print("here")
 
                 original_image[x][y][z] = int(v3, 2)
 
@@ -64,8 +57,8 @@ def decrypt(hidden_image):
     tempsize = tempimg.shape
 
     #filling our values with randoms 1s or 0s
-    print(chr(random.randint(0, 1) + 48) * 5)
-    print(chr(random.randint(0, 1) + 48) * 3)
+    chr(random.randint(0, 1) + 48) * 5
+    chr(random.randint(0, 1) + 48) * 3
 
     # img1 and img2 are two empty images
     img1 = np.zeros((width, height, 3), np.uint8)
@@ -81,52 +74,29 @@ def decrypt(hidden_image):
                 v1 = format(img[x][y][z], '08b')
                 uhh = format(img[x][y-1][z], '08b')
                 #(v1)
-                #print(uhh)
-                #print("ahh")
 
 #                if(v1 == '11110000'):
 #                    hold = hold + 1
 #                    if(x > holdx):
-#                        print(x)
 #                        holdx = x
-#                        print("x")
 #                    if(y > holdy):
-#                        print(y)
 #                        holdy = y
-#                        print("y")
 
                 v2 = v1[:5] + chr(random.randint(0, 1) + 48) * 3
                 v3 = v1[3:] + chr(random.randint(0, 1) + 48) * 5
 
-                #print(v1[:5])
-                #print(v1[3:])
-
                 if(v1[:5] == '11110'):
-                    #print("here")
-                    #print(v1[3:])
                     if(v1[3:] == '10000'):
                         hold = hold + 1
                         if(x > holdx):
-                            print(x)
                             holdx = x
-                            print("x")
                         if(y > holdy):
-                            print(y)
                             holdy = y
-                            print("y")
-                        #print("here")
-
-                #print(holdx)
-                #print(holdy)
 
                 # Appending data to img1 and img2
                 # Converting v2 and v3 to binary and then adding them to the end of the images
                 img1[x][y][z] = int(v2, 2)
                 img2[x][y][z] = int(v3, 2)
-
-    print("aks;ljdfaksl")
-    print(holdx)
-    print(holdy)
 
     img2 = img2[:holdx, :holdy]
 
@@ -145,7 +115,7 @@ warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # Load the initial image
 #image = cv2.imread("pirate.jpg")
-image = cv2.imread("clocktower.jpg")
+image = cv2.imread("pirate.jpg")
 
 # Change the string in here to change what we are hiding in the image
 Image_To_Hide = cv2.imread("testImg2.png")

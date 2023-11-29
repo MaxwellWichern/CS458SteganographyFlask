@@ -40,9 +40,9 @@ def deleteImage():
 
     return jsonify(response)
 
-@app.route('/delete/user/', methods=['POST'])
+@app.route('/user/delete/user/', methods=['POST'])
 def deleteUser():
-    data = request.get_json()
+    data = request.form
 
     s3 = fun.s3Connection()
     bucket = s3.Bucket(data['Bucket'])

@@ -40,6 +40,16 @@ def deleteImage():
 
     return jsonify(response)
 
+@app.route('/delete/user/', methods=['POST'])
+def deleteUser():
+    data = request.get_json()
+
+    s3 = fun.s3Connection()
+    bucket = s3.Bucket(data['Bucket'])
+    bucket.objects.filter(Prefix=data['Key']).delete()
+
+    return jsonify({'Deleted': data['Key']})
+
 @app.route('/user/encode/image/', methods=['POST'])
 def encodeImage():
 

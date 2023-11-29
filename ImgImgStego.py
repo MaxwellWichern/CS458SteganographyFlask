@@ -8,28 +8,19 @@ def encrypt(original_image, image_to_encrypt):
     height, width, depth = original_image.shape
     height2, width2, depth2 = image_to_encrypt.shape
 
-    cv2.imshow("first", original_image)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-    cv2.imshow("second", image_to_encrypt)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
-
     for x in range(height2):
         for y in range(width2):
             for z in range(3):
-                # v1 and v2 are 8-bit pixel values
+                # original_image_binary and image_to_encrypt_binary are 8-bit pixel values
                 # of img1 and img2 respectively
-                v1 = format(original_image[x][y][z], '08b')
+                original_image_binary = format(original_image[x][y][z], '08b')
 
-                v2 = format(image_to_encrypt[x][y][z], '08b')
+                image_to_encrypt_binary = format(image_to_encrypt[x][y][z], '08b')
 
                 # Taking 5 MSBs from the first image and 3 MSBs from the second image
-                v3 = v1[:5] + v2[:3]
+                final_image_binary = original_image_binary[:5] + image_to_encrypt_binary[:3]
 
-
-                original_image[x][y][z] = int(v3, 2)
+                original_image[x][y][z] = int(final_image_binary, 2)
 
     cv2.imwrite('outImgImg.png', original_image)
 
@@ -39,7 +30,6 @@ def encrypt(original_image, image_to_encrypt):
 def decrypt(hidden_image):
 
     # Encrypted image
-    #tempimg = cv2.imread('testImg2.png')
     img = hidden_image
     height, width, depth = img.shape
 
@@ -54,19 +44,29 @@ def decrypt(hidden_image):
     for x in range(height):
         for y in range(width):
             for z in range(3):
-                v1 = format(img[x][y][z], '08b')
-                uhh = format(img[x][y-1][z], '08b')
+                # Converting the current pixel to binary and getting rid of the '08b'
+                encoded_image_binary = format(img[x][y][z], '08b')
 
-                v2 = v1[:5] + chr(random.randint(0, 1) + 48) * 3
-                v3 = v1[3:] + chr(random.randint(0, 1) + 48) * 5
+                # pulling the first 5 bits that will make up the original image
+                #first_five_binary = encoded_image_binary[:5] + chr(random.randint(0, 1) + 48) * 3
+                first_five_binary = encoded_image_binary[:5] + chr(48) * 3
+
+                # Pulling the 3 least significant bits that represent the 3 significant bits of the hidden image
+                # We then add 5 random bits to the end of the image to reconstruct the image
+                # The random bits at the end give us a better looking extracted image
+                #last_three_binary = encoded_image_binary[3:] + chr(random.randint(0, 1) + 48) * 5
+                last_three_binary = encoded_image_binary[3:] + chr(48) * 5
 
                 # Appending data to img1 and img2
-                # Converting v2 and v3 to binary and then adding them to the end of the images
-                img1[x][y][z] = int(v2, 2)
-                img2[x][y][z] = int(v3, 2)
+                # Converting first_five_binary and last_three_binary to binary
+                # then adding them to the end of the images
+                img1[x][y][z] = int(first_five_binary, 2)
+                img2[x][y][z] = int(last_three_binary, 2)
+
 
     cv2.imwrite('origInImg.png', img1)
     cv2.imwrite('origOutImg.png', img2)
+
     cv2.imshow("finalInImg", img1)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
@@ -79,11 +79,11 @@ def decrypt(hidden_image):
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # Load the initial image
-image = cv2.imread("pirate.tif")
+image = cv2.imread("pirate.jpg")
 #image = cv2.imread("clocktower.jpg")
 
 # Change the string in here to change what we are hiding in the image
-Image_To_Hide = cv2.imread("testImg2.png")
+Image_To_Hide = cv2.imread("cat.jpg")
 
 # Calling the funtion to encrypt our string into the image
 # Passing it the image and the string that we will be using

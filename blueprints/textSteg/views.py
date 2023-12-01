@@ -1,7 +1,6 @@
 from main import app
 from flask import request, jsonify
 import functions as fun
-import json
 import tempfile
 import requests
 
@@ -13,12 +12,9 @@ def getImages():
     userImages = fun.genUsersLinks(s3, 'stegosaurus', data['User'], data['imType'])['Contents']
     urls = []
     for item in userImages:
-        print(item['Key'])
         URL = fun.s3URL(s3, 'stegosaurus', item['Key'])
         urls.append(URL)
 
-    # print(len(urls))
-    # print(urls)
     return jsonify({'Links': urls})
 
 @app.route('/user/upload/image/', methods=['POST'])
@@ -90,7 +86,7 @@ def decodeImage():
     
     switch = False
     data = request.form
-    print(data)
+
     try:
         file = request.files['file']
     except:
@@ -109,6 +105,5 @@ def decodeImage():
                 del response
 
             decodeResponse = fun.decrypt(filePath)
-            # print(decodeResponse)
 
     return(decodeResponse)

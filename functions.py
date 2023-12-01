@@ -93,9 +93,6 @@ def encrypt(image_path, message_to_encrypt, tmpDir):
     fileName = timeStamp() + ".png"
     cv2.imwrite(tmpDir + '/' + fileName, input_image)
 
-    # cv2.imshow("temp", (input_image%2)*255) # DELETE LATER
-    # cv2.waitKey(0)                          # DELETE LATER
-
     # Printing to show that we have finished encoding
     return({'fileName': fileName})
 

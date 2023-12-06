@@ -7,6 +7,14 @@ def encrypt(original_image, image_to_encrypt):
     height, width, depth = original_image.shape
     height2, width2, depth2 = image_to_encrypt.shape
 
+    dimH = format(height2, '08b')
+    dimW = format(width2, '08b')
+    Dims = dimH + dimW
+    print(len(Dims))
+    print(Dims)
+
+    index = 0
+
     # Looping through each pixel of original_image
     for x in range(height2):
         for y in range(width2):
@@ -27,6 +35,23 @@ def encrypt(original_image, image_to_encrypt):
                 # Then we assign the new value to the current pixel
                 original_image[x, y, z] = int(str(final_image_binary), 2)
 
+#                if(x == height2-1 and y == 0):
+#                    if len(Dims) >= 10:
+#                        final_image_binary = original_image_binary[:6] + str(len(Dims))
+#                        original_image[x, y, z] = int(str(final_image_binary), 2)
+#                    if len(Dims) < 10:
+#                        final_image_binary = original_image_binary[:7] + str(len(Dims))
+#                        original_image[x, y, z] = int(str(final_image_binary), 2)
+
+                if(x == height2-1):
+                    if(index < len(Dims)):
+                        final_image_binary = original_image_binary[:7] + Dims[index]
+                        original_image[x, y, z] = int(str(final_image_binary), 2)
+                    index = index + 1
+                    if(index == len(Dims)):
+                        final_image_binary = original_image_binary[:7] + '0'
+                        original_image[x, y, z] = int(str(final_image_binary), 2)
+
     # Writing the steganography image
     cv2.imwrite('outImgImg.png', original_image)
 
@@ -38,8 +63,9 @@ def decrypt(hidden_image):
     # Encrypted image
     height, width, depth = hidden_image.shape
 
-    # Creating two empty images with the same dimensions of the given image
-    img1 = np.zeros((height, width, 3), np.uint8)
+    tempstring = ""
+
+    # Creating an empty image with the same dimensions of the given image
     img2 = np.zeros((height, width, 3), np.uint8)
 
     # Looping through each pixel of the image
@@ -49,9 +75,6 @@ def decrypt(hidden_image):
                 # Converting the current pixel to a binary string and getting rid of the '08b' prefix
                 encoded_image_binary = format(hidden_image[x, y, z], '08b')
 
-                # pulling the first 5 bits that will make up the original image
-                #first_five_binary = encoded_image_binary[:5] + '000'
-
                 # Pulling the 3 least significant bits that represent the 3 significant bits of the hidden image
                 # We then add 00000 to the end of the image for better image reconstruction
                 last_three_binary = encoded_image_binary[5:] + '00000'
@@ -59,6 +82,12 @@ def decrypt(hidden_image):
                 # Converting first_five_binary and last_three_binary to binary ints
                 # We then place them into the empty images we created earlier
                 img2[x, y, z] = int(str(last_three_binary), 2)
+
+                temphold = tempstring
+
+                if(x == height-1 and y < 17):
+                    tempstring = temphold + str(encoded_image_binary[7:])
+                    print(tempstring)
 
     # Returning the hidden image
     return img2

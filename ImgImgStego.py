@@ -63,6 +63,8 @@ def decrypt(hidden_image):
     # Encrypted image
     height, width, depth = hidden_image.shape
 
+    blue = hidden_image[:,:,0]
+
     tempstring = ""
 
     # Creating an empty image with the same dimensions of the given image

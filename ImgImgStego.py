@@ -1,5 +1,4 @@
 import numpy as np
-import random
 import cv2
 
 def encrypt(original_image, image_to_encrypt):
@@ -7,6 +6,8 @@ def encrypt(original_image, image_to_encrypt):
     height, width, depth = original_image.shape
     height2, width2, depth2 = image_to_encrypt.shape
 
+    #dimH = format(height2, '08b')
+    #dimW = format(width2, '08b')
     dimH = format(height2, '08b')
     dimW = format(width2, '08b')
     Dims = dimH + dimW
@@ -43,14 +44,24 @@ def encrypt(original_image, image_to_encrypt):
 #                        final_image_binary = original_image_binary[:7] + str(len(Dims))
 #                        original_image[x, y, z] = int(str(final_image_binary), 2)
 
-                if(x == height2-1):
-                    if(index < len(Dims)):
+                #tossing the dimentinos in the bottom row
+                #if(x == height2-1 and z == 0):
+                #    if(index < len(Dims)):
+                #        print(Dims[index])
+                #        final_image_binary = original_image_binary[:7] + Dims[index]
+                #        original_image[x, y, z] = int(str(final_image_binary), 2)
+                #        index = index + 1
+
+    for x in range(height):
+        for y in range(width):
+            for z in range(3):
+                original_image_binary = format(original_image[x, y, z], '08b')
+                # tossing the dimentions in the bottom row
+                if (x == height - 1 and z == 0):
+                    if (index < len(Dims)):
                         final_image_binary = original_image_binary[:7] + Dims[index]
                         original_image[x, y, z] = int(str(final_image_binary), 2)
-                    index = index + 1
-                    if(index == len(Dims)):
-                        final_image_binary = original_image_binary[:7] + '0'
-                        original_image[x, y, z] = int(str(final_image_binary), 2)
+                        index = index + 1
 
     # Writing the steganography image
     cv2.imwrite('outImgImg.png', original_image)
@@ -85,9 +96,10 @@ def decrypt(hidden_image):
 
                 temphold = tempstring
 
-                if(x == height-1 and y < 17):
+                if(x == height-1 and y < 18 and z == 0):
                     tempstring = temphold + str(encoded_image_binary[7:])
-                    print(tempstring)
+
+    print(tempstring)
 
     # Returning the hidden image
     return img2

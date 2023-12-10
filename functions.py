@@ -5,11 +5,12 @@ import cv2
 import datetime
 
 def timeStamp():
+# returns a string of the current time (year month day hr min sec microsec)
     stamp = datetime.datetime.now()
     return (stamp.strftime("%Y%m%d%H%M%S%f"))
 
 def s3Connection():
-    
+# creates a connection to aws s3
     s3 = boto3.resource('s3',
                         aws_access_key_id = 'AKIASUMLVXC3TBX75UN7',
                         aws_secret_access_key = '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',
@@ -19,8 +20,7 @@ def s3Connection():
     return s3
 
 def s3URL(s3, bucket, key):
-    # Generate a pre-signed URL for the S3 object
-
+# Generate a pre-signed URL for the S3 object
     url = s3.meta.client.generate_presigned_url(
         ClientMethod='get_object',
         Params={'Bucket': bucket, 'Key': key},
@@ -29,7 +29,7 @@ def s3URL(s3, bucket, key):
     return url
     
 def s3Upload(s3, bucket, path, key):
-
+# Uploads file to s3 with image metadata
     fileType = path.split('.')
     if fileType[-1] == 'jpg':
         fileType[-1] = 'jpeg'
@@ -41,12 +41,12 @@ def s3Upload(s3, bucket, path, key):
     return (f"Uploaded {path} to s3://{bucket}/{key}")
 
 def s3Delete(s3, bucket, key):
-
+# Deletes key from s3 bucket
     s3.meta.client.delete_object(Bucket=bucket, Key=key)
     return(f"Removed s3://{bucket}/{key}")
 
 def genUsersLinks(s3, bucket, user, imType):
-
+# Returns a list of all object for user and imType
     searchString = user + '/' + imType
     response = s3.meta.client.list_objects(Bucket=bucket, Prefix=searchString)
     return(response)
@@ -89,7 +89,7 @@ def encrypt(image_path, message_to_encrypt, tmpDir):
             for r in range(3):
                 input_image[b, g, r] = (input_image[b, g, r] & 0xFE) | binary_data[b, g, r]
 
-    # Save the modified imagev
+    # Save the modified image
     fileName = timeStamp() + ".png"
     cv2.imwrite(tmpDir + '/' + fileName, input_image)
 

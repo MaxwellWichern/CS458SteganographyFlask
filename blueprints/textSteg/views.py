@@ -1,30 +1,26 @@
 from main import app
 from flask import request, jsonify
 import functions as fun
-import json
 import tempfile
 import requests
 
 @app.route('/user/all/images/', methods=['POST'])
 def getImages():
     data = request.form
-
+# Returns URLs to requested images
     s3 = fun.s3Connection()
     userImages = fun.genUsersLinks(s3, 'stegosaurus', data['User'], data['imType'])['Contents']
     urls = []
     for item in userImages:
-        print(item['Key'])
         URL = fun.s3URL(s3, 'stegosaurus', item['Key'])
         urls.append(URL)
 
-    # print(len(urls))
-    # print(urls)
     return jsonify({'Links': urls})
 
 @app.route('/user/upload/image/', methods=['POST'])
 def uploadImage():
-    data = request.form
-
+    data = request.get_json()
+# Uploads image to aws s3 (Currently unused)
     s3 = fun.s3Connection()
     key = data['User'] + '/' + data['imType'] + '/red.png'
     response = fun.s3Upload(s3, data['Bucket'], 'red.png', key)
@@ -34,7 +30,7 @@ def uploadImage():
 @app.route('/user/delete/image/', methods=['POST'])
 def deleteImage():
     data = request.form
-
+# Deletes single image from s3
     s3 = fun.s3Connection()
     response = fun.s3Delete(s3, data['Bucket'], data['Key'])
 
@@ -43,7 +39,7 @@ def deleteImage():
 @app.route('/user/delete/user/', methods=['POST'])
 def deleteUser():
     data = request.form
-
+# Deletes users entire collection from s3
     s3 = fun.s3Connection()
     bucket = s3.Bucket(data['Bucket'])
     bucket.objects.filter(Prefix=data['Key']).delete()
@@ -52,7 +48,7 @@ def deleteUser():
 
 @app.route('/user/encode/image/', methods=['POST'])
 def encodeImage():
-
+# encodes message in image and uploads to s3
     switch = False
     data = request.form
     try:
@@ -87,10 +83,10 @@ def encodeImage():
 
 @app.route('/user/decode/image/', methods=['POST'])
 def decodeImage():
-    
+# Decodes message from image and returns message
     switch = False
     data = request.form
-    print(data)
+
     try:
         file = request.files['file']
     except:
@@ -109,6 +105,5 @@ def decodeImage():
                 del response
 
             decodeResponse = fun.decrypt(filePath)
-            # print(decodeResponse)
 
     return(decodeResponse)

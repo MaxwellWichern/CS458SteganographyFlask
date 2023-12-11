@@ -118,11 +118,11 @@ def decrypt(hidden_image):
     return img2
 
 # Load the initial image
-image = cv2.imread("pirate.jpg")
+image = cv2.imread("spacebig.jpg")
 #image = cv2.imread("clocktower.jpg")
 
 # Change the string in here to change what we are hiding in the image
-Image_To_Hide = cv2.imread("dog.jpg")
+Image_To_Hide = cv2.imread("pirate.jpg")
 
 # Calling the funtion to encrypt our string into the image
 # Passing it the image and the string that we will be using

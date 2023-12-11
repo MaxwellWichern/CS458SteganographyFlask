@@ -9,9 +9,13 @@ def encrypt(original_image, image_to_encrypt):
 
     dimH = format(height2, '08b')
     dimW = format(width2, '08b')
+    dimHLong = format(height2, '018b')
+    #dimHLong = np.array(list(dimHLong)).astype(int)
+    dimWLong = format(width2, '018b')
+    #dimWLong = np.array(list(dimWLong)).astype(int)
     Dims = dimH + dimW
-    print(len(Dims))
-    print(Dims)
+    #print(len(Dims))
+    #print(Dims)
 
     index = 0
 
@@ -35,6 +39,15 @@ def encrypt(original_image, image_to_encrypt):
                 # Then we assign the new value to the current pixel
                 original_image[x, y, z] = int(str(final_image_binary), 2)
 
+                #We're using the corner pixel for width
+                if(x == height2-1 and y == 0):
+                    print(dimWLong[5*z:5*(z+1)])
+                    #print(format(original_image[x,y,0],'08b')[0:3] + dimWLong[5*z:5*(z+1)])
+                    original_image[x,y,z] = format(original_image[x,y,0],'08b')[0:3] + dimWLong[5*z:5*(z+1)]
+
+                if(x==height2-1 and y==1):
+                    original_image[x, y, z] = format(original_image[x, y, 0], '08b')[0:3] + dimHLong[5*z:5*(z+1)]
+
 #                if(x == height2-1 and y == 0):
 #                    if len(Dims) >= 10:
 #                        final_image_binary = original_image_binary[:6] + str(len(Dims))
@@ -43,20 +56,42 @@ def encrypt(original_image, image_to_encrypt):
 #                        final_image_binary = original_image_binary[:7] + str(len(Dims))
 #                        original_image[x, y, z] = int(str(final_image_binary), 2)
 
-                if(x == height2-1):
-                    if(index < len(Dims)):
-                        final_image_binary = original_image_binary[:7] + Dims[index]
-                        original_image[x, y, z] = int(str(final_image_binary), 2)
-                    index = index + 1
-                    if(index == len(Dims)):
-                        final_image_binary = original_image_binary[:7] + '0'
-                        original_image[x, y, z] = int(str(final_image_binary), 2)
+#                if(x == height2-1):
+#                    if(index < len(Dims)):
+#                        final_image_binary = original_image_binary[:7] + Dims[index]
+#                        original_image[x, y, z] = int(str(final_image_binary), 2)
+#                    index = index + 1
+#                    if(index == len(Dims)):
+#                        final_image_binary = original_image_binary[:7] + '0'
+#                        original_image[x, y, z] = int(str(final_image_binary), 2)
+
+    #print(format(original_image[height-1,0,0],'08b')[0:3]+dimWLong[0:5])
+    #Hide width in the corner pixels
+    original_image[height-2,0,0] = int(format(original_image[height-2,0,0],'08b')[0:5]+dimWLong[0:3])
+    original_image[height-2,0,1] = int(format(original_image[height-2,0,1],'08b')[0:5]+dimWLong[3:6])
+    original_image[height-2,0,2] = int(format(original_image[height-2,0,2],'08b')[0:5]+dimWLong[6:9])
+
+    original_image[height - 1, 0, 0] = int(format(original_image[height - 1, 0, 0], '08b')[0:5] + dimWLong[9:12])
+    original_image[height - 1, 0, 1] = int(format(original_image[height - 1, 0, 1], '08b')[0:5] + dimWLong[12:15])
+    original_image[height - 1, 0, 2] = int(format(original_image[height - 1, 0, 2], '08b')[0:5] + dimWLong[15:18])
+
+    #Hide heigth in the other corner pixels
+    original_image[height-4,0,0] = int(format(original_image[height - 4, 0, 0], '08b')[0:5] + dimHLong[0:3])
+    original_image[height-4,0,1] = int(format(original_image[height - 4, 0, 1], '08b')[0:5] + dimHLong[3:6])
+    original_image[height-4,0,2] = int(format(original_image[height - 4, 0, 2], '08b')[0:5] + dimHLong[6:9])
+
+    original_image[height - 3, 0, 0] = int(format(original_image[height - 3, 0, 0], '08b')[0:5] + dimHLong[9:12])
+    original_image[height - 3, 0, 1] = int(format(original_image[height - 3, 0, 1], '08b')[0:5] + dimHLong[12:15])
+    original_image[height - 3, 0, 2] = int(format(original_image[height - 3, 0, 2], '08b')[0:5] + dimHLong[15:18])
+
+    print(dimWLong)
+    print(dimHLong)
 
     # Writing the steganography image
     cv2.imwrite('outImgImg.png', original_image)
 
     # Printing to show that we have finished encoding
-    print("finished hiding")
+    #print("finished hiding")
 
 def decrypt(hidden_image):
 
@@ -66,6 +101,8 @@ def decrypt(hidden_image):
     blue = hidden_image[:,:,0]
 
     tempstring = ""
+    dimWHidden = ""
+    dimHHidden = ""
 
     # Creating an empty image with the same dimensions of the given image
     img2 = np.zeros((height, width, 3), np.uint8)
@@ -87,9 +124,30 @@ def decrypt(hidden_image):
 
                 temphold = tempstring
 
-                if(x == height-1 and y < 17):
-                    tempstring = temphold + str(encoded_image_binary[7:])
-                    print(tempstring)
+                #Getting the width dimension
+                if(x == height-1 and y==0):
+                    print(encoded_image_binary[5:8])
+                    dimWHidden += encoded_image_binary[5:8]
+                if(x == height-2 and y==0):
+                    print(encoded_image_binary[5:8])
+                    dimWHidden += encoded_image_binary[5:8]
+
+                if(x == height-3 and y==0):
+                    print(encoded_image_binary[5:8])
+                    dimHHidden += encoded_image_binary[5:8]
+                if(x == height-4 and y==0):
+                    print(encoded_image_binary[5:8])
+                    dimHHidden += encoded_image_binary[5:8]
+#                if(x == height-1 and y < 17):
+#                    tempstring = temphold + str(encoded_image_binary[7:])
+                    #print(tempstring)
+
+    print(dimWHidden)
+    print(dimHHidden)
+
+    width = int(dimWHidden,2)
+    height = int(dimHHidden,2)
+    img2 = img2[:height,:width]
 
     # Returning the hidden image
     return img2
@@ -99,7 +157,7 @@ image = cv2.imread("pirate.jpg")
 #image = cv2.imread("clocktower.jpg")
 
 # Change the string in here to change what we are hiding in the image
-Image_To_Hide = cv2.imread("cat.jpg")
+Image_To_Hide = cv2.imread("dog.jpg")
 
 # Calling the funtion to encrypt our string into the image
 # Passing it the image and the string that we will be using

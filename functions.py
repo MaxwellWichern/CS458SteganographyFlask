@@ -12,8 +12,6 @@ def timeStamp():
 def s3Connection():
 # creates a connection to aws s3
     s3 = boto3.resource('s3',
-                        aws_access_key_id = 'AKIASUMLVXC3TBX75UN7',
-                        aws_secret_access_key = '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',
                         region_name='us-east-2',
                         config=Config(signature_version='s3v4')
                         )

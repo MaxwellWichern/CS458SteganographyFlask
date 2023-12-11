@@ -19,7 +19,7 @@ def getImages():
 
 @app.route('/user/upload/image/', methods=['POST'])
 def uploadImage():
-    data = request.form
+    data = request.get_json()
 # Uploads image to aws s3 (Currently unused)
     s3 = fun.s3Connection()
     key = data['User'] + '/' + data['imType'] + '/red.png'

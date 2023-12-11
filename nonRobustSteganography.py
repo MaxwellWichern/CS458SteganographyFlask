@@ -100,7 +100,7 @@ def decrypt(hidden_image):
 
 
 # Load the initial image
-image = cv2.imread("rose.png")
+image = cv2.imread("origInImg.png")
 
 # Change the string in here to change what we are hiding in the image
 hiddenMessage = "AHHHHH ;-; HHHHHA"

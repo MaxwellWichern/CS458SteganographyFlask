@@ -67,22 +67,22 @@ def encrypt(original_image, image_to_encrypt):
 
     #print(format(original_image[height-1,0,0],'08b')[0:3]+dimWLong[0:5])
     #Hide width in the corner pixels
-    original_image[height-2,0,0] = int(format(original_image[height-2,0,0],'08b')[0:5]+dimWLong[0:3])
-    original_image[height-2,0,1] = int(format(original_image[height-2,0,1],'08b')[0:5]+dimWLong[3:6])
-    original_image[height-2,0,2] = int(format(original_image[height-2,0,2],'08b')[0:5]+dimWLong[6:9])
+    original_image[0,0,0] = int(format(original_image[0,0,0],'08b')[0:5]+dimWLong[0:3])
+    original_image[0,0,1] = int(format(original_image[0,0,1],'08b')[0:5]+dimWLong[3:6])
+    original_image[0,0,2] = int(format(original_image[0,0,2],'08b')[0:5]+dimWLong[6:9])
 
-    original_image[height - 1, 0, 0] = int(format(original_image[height - 1, 0, 0], '08b')[0:5] + dimWLong[9:12])
-    original_image[height - 1, 0, 1] = int(format(original_image[height - 1, 0, 1], '08b')[0:5] + dimWLong[12:15])
-    original_image[height - 1, 0, 2] = int(format(original_image[height - 1, 0, 2], '08b')[0:5] + dimWLong[15:18])
+    original_image[height-1, 0, 0] = int(format(original_image[height - 1, 0, 0], '08b')[0:5] + dimWLong[9:12])
+    original_image[height-1, 0, 1] = int(format(original_image[height - 1, 0, 1], '08b')[0:5] + dimWLong[12:15])
+    original_image[height-1, 0, 2] = int(format(original_image[height - 1, 0, 2], '08b')[0:5] + dimWLong[15:18])
 
     #Hide heigth in the other corner pixels
-    original_image[height-4,0,0] = int(format(original_image[height - 4, 0, 0], '08b')[0:5] + dimHLong[0:3])
-    original_image[height-4,0,1] = int(format(original_image[height - 4, 0, 1], '08b')[0:5] + dimHLong[3:6])
-    original_image[height-4,0,2] = int(format(original_image[height - 4, 0, 2], '08b')[0:5] + dimHLong[6:9])
+    original_image[0,height-1,0] = int(format(original_image[0, height - 1, 0], '08b')[0:5] + dimHLong[0:3])
+    original_image[0,height-1,1] = int(format(original_image[0, height - 1, 1], '08b')[0:5] + dimHLong[3:6])
+    original_image[0,height-1,2] = int(format(original_image[0, height - 1, 2], '08b')[0:5] + dimHLong[6:9])
 
-    original_image[height - 3, 0, 0] = int(format(original_image[height - 3, 0, 0], '08b')[0:5] + dimHLong[9:12])
-    original_image[height - 3, 0, 1] = int(format(original_image[height - 3, 0, 1], '08b')[0:5] + dimHLong[12:15])
-    original_image[height - 3, 0, 2] = int(format(original_image[height - 3, 0, 2], '08b')[0:5] + dimHLong[15:18])
+    original_image[height - 1, height-1, 0] = int(format(original_image[height - 1, height-1, 0], '08b')[0:5] + dimHLong[9:12])
+    original_image[height - 1, height-1, 1] = int(format(original_image[height - 1, height-1, 1], '08b')[0:5] + dimHLong[12:15])
+    original_image[height - 1, height-1, 2] = int(format(original_image[height - 1, height-1, 2], '08b')[0:5] + dimHLong[15:18])
 
     print(dimWLong)
     print(dimHLong)
@@ -128,14 +128,14 @@ def decrypt(hidden_image):
                 if(x == height-1 and y==0):
                     print(encoded_image_binary[5:8])
                     dimWHidden += encoded_image_binary[5:8]
-                if(x == height-2 and y==0):
+                if(x == 0 and y==0):
                     print(encoded_image_binary[5:8])
                     dimWHidden += encoded_image_binary[5:8]
 
-                if(x == height-3 and y==0):
+                if(x == 0 and y==height-1):
                     print(encoded_image_binary[5:8])
                     dimHHidden += encoded_image_binary[5:8]
-                if(x == height-4 and y==0):
+                if(x == height-1 and y==height-1):
                     print(encoded_image_binary[5:8])
                     dimHHidden += encoded_image_binary[5:8]
 #                if(x == height-1 and y < 17):

@@ -7,16 +7,11 @@ def encrypt(original_image, image_to_encrypt):
     height, width, depth = original_image.shape
     height2, width2, depth2 = image_to_encrypt.shape
 
-    dimH = format(height2, '08b')
-    dimW = format(width2, '08b')
+    #18-bit binary string for the width and height
     dimHLong = format(height2, '018b')
-    #dimHLong = np.array(list(dimHLong)).astype(int)
     dimWLong = format(width2, '018b')
-    #dimWLong = np.array(list(dimWLong)).astype(int)
-    Dims = dimH + dimW
-    #print(len(Dims))
-    #print(Dims)
 
+    #Not sure what this is
     index = 0
 
     # Looping through each pixel of original_image
@@ -39,38 +34,11 @@ def encrypt(original_image, image_to_encrypt):
                 # Then we assign the new value to the current pixel
                 original_image[x, y, z] = int(str(final_image_binary), 2)
 
-                #We're using the corner pixel for width
-                if(x == height2-1 and y == 0):
-                    print(dimWLong[5*z:5*(z+1)])
-                    #print(format(original_image[x,y,0],'08b')[0:3] + dimWLong[5*z:5*(z+1)])
-                    original_image[x,y,z] = format(original_image[x,y,0],'08b')[0:3] + dimWLong[5*z:5*(z+1)]
-
-                if(x==height2-1 and y==1):
-                    original_image[x, y, z] = format(original_image[x, y, 0], '08b')[0:3] + dimHLong[5*z:5*(z+1)]
-
-#                if(x == height2-1 and y == 0):
-#                    if len(Dims) >= 10:
-#                        final_image_binary = original_image_binary[:6] + str(len(Dims))
-#                        original_image[x, y, z] = int(str(final_image_binary), 2)
-#                    if len(Dims) < 10:
-#                        final_image_binary = original_image_binary[:7] + str(len(Dims))
-#                        original_image[x, y, z] = int(str(final_image_binary), 2)
-
-#                if(x == height2-1):
-#                    if(index < len(Dims)):
-#                        final_image_binary = original_image_binary[:7] + Dims[index]
-#                        original_image[x, y, z] = int(str(final_image_binary), 2)
-#                    index = index + 1
-#                    if(index == len(Dims)):
-#                        final_image_binary = original_image_binary[:7] + '0'
-#                        original_image[x, y, z] = int(str(final_image_binary), 2)
-
     #print(format(original_image[height-1,0,0],'08b')[0:3]+dimWLong[0:5])
     #Hide width in the corner pixels
     original_image[0,0,0] = int(format(original_image[0,0,0],'08b')[0:5]+dimWLong[0:3])
     original_image[0,0,1] = int(format(original_image[0,0,1],'08b')[0:5]+dimWLong[3:6])
     original_image[0,0,2] = int(format(original_image[0,0,2],'08b')[0:5]+dimWLong[6:9])
-
     original_image[height-1, 0, 0] = int(format(original_image[height - 1, 0, 0], '08b')[0:5] + dimWLong[9:12])
     original_image[height-1, 0, 1] = int(format(original_image[height - 1, 0, 1], '08b')[0:5] + dimWLong[12:15])
     original_image[height-1, 0, 2] = int(format(original_image[height - 1, 0, 2], '08b')[0:5] + dimWLong[15:18])
@@ -79,13 +47,9 @@ def encrypt(original_image, image_to_encrypt):
     original_image[0,height-1,0] = int(format(original_image[0, height - 1, 0], '08b')[0:5] + dimHLong[0:3])
     original_image[0,height-1,1] = int(format(original_image[0, height - 1, 1], '08b')[0:5] + dimHLong[3:6])
     original_image[0,height-1,2] = int(format(original_image[0, height - 1, 2], '08b')[0:5] + dimHLong[6:9])
-
     original_image[height - 1, height-1, 0] = int(format(original_image[height - 1, height-1, 0], '08b')[0:5] + dimHLong[9:12])
     original_image[height - 1, height-1, 1] = int(format(original_image[height - 1, height-1, 1], '08b')[0:5] + dimHLong[12:15])
     original_image[height - 1, height-1, 2] = int(format(original_image[height - 1, height-1, 2], '08b')[0:5] + dimHLong[15:18])
-
-    print(dimWLong)
-    print(dimHLong)
 
     # Writing the steganography image
     cv2.imwrite('outImgImg.png', original_image)
@@ -98,8 +62,10 @@ def decrypt(hidden_image):
     # Encrypted image
     height, width, depth = hidden_image.shape
 
+    #Also not sure what this is for
     blue = hidden_image[:,:,0]
 
+    #We initialize empty strings so that we can add to them and not cause a memory error
     tempstring = ""
     dimWHidden = ""
     dimHHidden = ""
@@ -124,29 +90,28 @@ def decrypt(hidden_image):
 
                 temphold = tempstring
 
-                #Getting the width dimension
+                #Pull and reconstruct the width dimension as a binary string from the corner pixels
                 if(x == height-1 and y==0):
-                    print(encoded_image_binary[5:8])
+                    #print(encoded_image_binary[5:8])
                     dimWHidden += encoded_image_binary[5:8]
                 if(x == 0 and y==0):
-                    print(encoded_image_binary[5:8])
+                    #print(encoded_image_binary[5:8])
                     dimWHidden += encoded_image_binary[5:8]
 
+                #Pull and reconstruct the height dimension as a binary string from the corner pixels
                 if(x == 0 and y==height-1):
-                    print(encoded_image_binary[5:8])
+                    #print(encoded_image_binary[5:8])
                     dimHHidden += encoded_image_binary[5:8]
                 if(x == height-1 and y==height-1):
-                    print(encoded_image_binary[5:8])
+                    #print(encoded_image_binary[5:8])
                     dimHHidden += encoded_image_binary[5:8]
-#                if(x == height-1 and y < 17):
-#                    tempstring = temphold + str(encoded_image_binary[7:])
-                    #print(tempstring)
 
-    print(dimWHidden)
-    print(dimHHidden)
-
+    #Set the height and width to the numbers pulled from the image
+    #Convert from binary string to int
     width = int(dimWHidden,2)
     height = int(dimHHidden,2)
+
+    #Crop the hidden image
     img2 = img2[:height,:width]
 
     # Returning the hidden image

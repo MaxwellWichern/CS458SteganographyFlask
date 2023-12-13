@@ -6,6 +6,8 @@ def encrypt(original_image, image_to_encrypt):
     height, width, depth = original_image.shape
     height2, width2, depth2 = image_to_encrypt.shape
 
+    # Taking the dimensions of the image in binary and getting the size of the string
+    # Then we also convert the size of that image to binary
     dimH = format(height2, '08b')
     dimW = format(width2, '08b')
     Dims = dimH + dimW
@@ -39,7 +41,8 @@ def encrypt(original_image, image_to_encrypt):
         for y in range(width):
             for z in range(3):
                 original_image_binary = format(original_image[x, y, z], '08b')
-                # tossing the dimentions in the bottom row
+                # Hiding the length of the binary dimentions in the bottom row
+                # We also hide the actual dimentions in binary
                 if (x == height - 1 and z == 0 and index < (DimsSize+9)):
                     if (index < 8):
                         final_image_binary = original_image_binary[:7] + DimsSizeBinary[index]
@@ -84,6 +87,7 @@ def decrypt(hidden_image):
 
                 tempholdsize = tempstringsize
 
+                # Pulling out how many bits we have to grab in order to get the dimentions out
                 if(x == height-1 and y < 8 and z == 0):
                     tempstringsize = tempholdsize + str(encoded_image_binary[7:])
 

@@ -41,8 +41,8 @@ def encrypt(original_image, image_to_encrypt):
         for y in range(width):
             for z in range(3):
                 original_image_binary = format(original_image[x, y, z], '08b')
-                # Hiding the length of the binary dimentions in the bottom row
-                # We also hide the actual dimentions in binary
+                # Hiding the length of the binary dimensions in the bottom row
+                # We also hide the actual dimensions in binary
                 if (x == height - 1 and z == 0 and index < (DimsSize+9)):
                     if (index < 8):
                         final_image_binary = original_image_binary[:7] + DimsSizeBinary[index]
@@ -64,6 +64,7 @@ def decrypt(hidden_image):
     # Encrypted image
     height, width, depth = hidden_image.shape
 
+    # Initializing variables
     tempstring = ""
     tempstringsize = ""
 
@@ -91,6 +92,7 @@ def decrypt(hidden_image):
                 if(x == height-1 and y < 8 and z == 0):
                     tempstringsize = tempholdsize + str(encoded_image_binary[7:])
 
+    # This is going to be the number of bits we grab for the dimensions
     holddis = int(tempstringsize, 2)
 
     for x in range(height):
@@ -101,14 +103,19 @@ def decrypt(hidden_image):
 
                 temphold = tempstring
 
+                # tempstring is going to hold the binary of both the height and width dimensions
                 if(x == height-1 and 8 < y and y < holddis+9 and z == 0):
                     tempstring = temphold + str(encoded_image_binary[7:])
 
+    # Here we split the binary string into separate strings with each one representing a measurement
     hDim = tempstring[0:len(tempstring) // 2]
     wDim = tempstring[len(tempstring) // 2 if len(tempstring) % 2 == 0 else ((len(tempstring) // 2) + 1):]
+
+    # Converting our dimensions from binary to usable numbers
     hDim = int(hDim, 2)
     wDim = int(wDim, 2)
 
+    # Cropping the image using the dimensions we pulled earlier
     img2 = img2[:hDim, :wDim]
 
     # Returning the hidden image
@@ -116,7 +123,6 @@ def decrypt(hidden_image):
 
 # Load the initial image
 image = cv2.imread("pirate.jpg")
-#image = cv2.imread("clocktower.jpg")
 
 # Change the string in here to change what we are hiding in the image
 Image_To_Hide = cv2.imread("cat.jpg")
